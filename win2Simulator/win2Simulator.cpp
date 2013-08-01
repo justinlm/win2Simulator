@@ -18,7 +18,7 @@ static void showHelp()
     printf("\nwin2Simulator version: %s (Built %s).\n", WIN2SIMULATOR, __DATE__);
 	
 	printf("  -help,-?  Show this message.\n");
-	printf("  -f name   Execute file 'name' with remaining arguments in table 'arg'\n\n");
+	printf("  -d name   Execute dir 'name' with remaining arguments in table 'arg'\n\n");
 	
 	// 	printf("Copyright (c) 2001,2002 Nick Trout.\n"
 	// 		"Source code is released under the GNU GPL license.\n"
@@ -35,7 +35,7 @@ static void showHelp()
 	// 	printf("  -f name   Execute file 'name' with remaining arguments in table 'arg'\n\n");
 }
 
-static string creatDirAndCpoy2It(string & srcDirname, string & dirfiles)
+static string creatDirAndCpoy2It(string  srcDirname, string & dirfiles)
 {
 	_finddata_t file;
     long lf;
@@ -135,7 +135,7 @@ static string creatDirAndCpoy2It(string & srcDirname, string & dirfiles)
 //     return true;  
 // }  
 
-static bool readAndWriteFile(const string & srcFile, const string & destFile, const string &fileDir, int flag = 0)
+static bool readAndWriteFile(const string & srcFile, const string & destFile, const string &modifyContent, int flag = 0)
 {
 	ifstream ifs(srcFile.c_str(), ifstream::in);
 	if(ifs.fail())
@@ -161,13 +161,13 @@ static bool readAndWriteFile(const string & srcFile, const string & destFile, co
 			if (line.find("AppletDir=") != string::npos)
 			{
 				line = "AppletDir=";
-				line.append(fileDir);
+				line.append(modifyContent);
 				//cout << line << endl;
 			}
 			else if (line.find("MIFDir=") != string::npos)
 			{
 				line = "MIFDir=";
-				line.append(fileDir);
+				line.append(modifyContent);
 				//cout << line << endl;
 			}
 			else if (line.find("SpecifyMIF=") != string::npos)
@@ -188,7 +188,7 @@ static bool readAndWriteFile(const string & srcFile, const string & destFile, co
 	return true;
 }
 
-static void set_Brew_emu_value(const string & destDir, const char *pPath)
+static void set_Brew_emu_value(const string & modifyContent, const char *pPath)
 {
 	 string str_brew_emu(pPath);
 	 str_brew_emu.append("\\bin\\BREW_Emu.dat");
@@ -196,11 +196,11 @@ static void set_Brew_emu_value(const string & destDir, const char *pPath)
 	 string str_brew_emu_temp(pPath);
 	 str_brew_emu_temp.append("\\bin\\BREW_Emu_tmp.dat");
 
-	 readAndWriteFile(str_brew_emu, str_brew_emu_temp, destDir, 1);
+	 readAndWriteFile(str_brew_emu, str_brew_emu_temp, modifyContent, 1);
 
-	 readAndWriteFile(str_brew_emu, str_brew_emu + ".bak", destDir);
+	 readAndWriteFile(str_brew_emu, str_brew_emu + ".bak", modifyContent);
 
-	 readAndWriteFile(str_brew_emu_temp, str_brew_emu, destDir);
+	 readAndWriteFile(str_brew_emu_temp, str_brew_emu, modifyContent);
 
 	if( remove(str_brew_emu_temp.c_str()) != 0)
 		 perror("Error deleting file");
@@ -250,7 +250,7 @@ int main(int argc, char* argv[])
 		showHelp();
 		exit(0);
 	}
-	else if (argc >= 2 && strcmp(argv[1], "-f") == 0)
+	else if (argc >= 2 && strcmp(argv[1], "-d") == 0)
 	{
 		if (argc < 3)
 		{
@@ -269,13 +269,13 @@ int main(int argc, char* argv[])
 	string destDir = creatDirAndCpoy2It(srcDirname, dirfiles);
 
 
-	char *pPath;
-	pPath = getenv("BREWDIR");
+	char *pbrewPath;
+	pbrewPath = getenv("BREWDIR");
 
-	set_Brew_emu_value(destDir, pPath);
+	set_Brew_emu_value(srcDirname, pbrewPath);
 
 	system("cls");
-	string brewSimulator(pPath);
+	string brewSimulator(pbrewPath);
 	brewSimulator.append("\\bin\\BREW_Simulator.exe");
 	system(brewSimulator.c_str());
 	
