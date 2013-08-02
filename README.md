@@ -1,7 +1,7 @@
 win2Simulator
 =============
 
-this is a auto call brew_simulator run brew game dll program.
+this is a auto call brew_simulator.exe run brew game's dll program.
 
 
 just need drag a folder which contains files(eg: *.bar, *.dll, *.mif)  to win2Simulator.exe. 
